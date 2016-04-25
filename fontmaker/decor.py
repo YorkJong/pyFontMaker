@@ -5,7 +5,7 @@ This tool decorates OSD .BMP file, e.g., add, shadows
 __software__ = "OSD Decorate"
 __version__ = "1.1"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
-__date__ = "2012/03/19 (initial version); 2016/04/19 (last revision)"
+__date__ = "2012/03/19 (initial version); 2016/04/25 (last revision)"
 
 import argparse
 import sys
@@ -50,7 +50,7 @@ def find_edge(im, fg_color):
 def add_edge(im, fg_color=clFORE, eg_color=clEDGE):
     """Add edge to an image
     """
-    im = extract_fore(im, fg_color)
+    im = extract_fore(im, fg_color)     # foreground
     mask = find_edge(im, fg_color)
     edge = mask.point(lambda x: x == clWHITE and eg_color)
     im.paste(edge, (0, 0), mask)
@@ -67,7 +67,8 @@ def add_shadow11(im, fg_color=clFORE, eg_color=clEDGE):
     out = Image.new('L', (w + 1, h + 1))
     out.paste(shadow, (0, 0))           # umbra
     out.paste(shadow, (1, 1), mask)     # penumbra
-    out.paste(extract_fore(im, fg_color), (0, 0), mask)
+    im = extract_fore(im, fg_color)     # foreground
+    out.paste(im, (0, 0), mask)
     out = out.crop((0, 0, w, h))
     return out
 
@@ -82,7 +83,8 @@ def add_shadow21(im, fg_color=clFORE, eg_color=clEDGE):
     out = Image.new('L', (w + 2, h + 1))
     out.paste(shadow, (1, 0))           # umbra
     out.paste(shadow, (2, 1), mask)     # penumbra
-    out.paste(extract_fore(im, fg_color), (0, 0), mask)
+    im = extract_fore(im, fg_color)     # foreground
+    out.paste(im, (0, 0), mask)
     out = out.crop((0, 0, w, h))
     return out
 

@@ -10,7 +10,7 @@ __date__ = "2016/04/19 (initial version); 2016/04/25 (last revision)"
 import os
 from itertools import izip
 
-from PIL import ImageFont, Image, ImageDraw
+from PIL import ImageFont, Image, ImageDraw, ImageColor
 
 
 #------------------------------------------------------------------------------
@@ -151,7 +151,10 @@ def test_decor():
     #im = Image.merge('RGBA', (lum, lum, lum, alpha))
     #im = im.convert('P')
     im = im.convert('P', palette=Image.ADAPTIVE, colors=3, dither=Image.NONE)
-    im.putpalette([0,0,0, 255,0,0, 0,255,0])
+    bg = ImageColor.getrgb('black')
+    fg = ImageColor.getrgb('red')
+    eg = ImageColor.getrgb('green')
+    im.putpalette(list(bg) + list(fg) + list(eg))
     im.save('A.png', transparency=0)
 
 

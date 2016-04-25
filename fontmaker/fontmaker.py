@@ -5,7 +5,7 @@ Generate charater pictures, character list file, and test message with a font.
 __software__ = "Font Maker"
 __version__ = "0.01"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
-__date__ = "2016/04/19 (initial version); 2016/04/19 (last revision)"
+__date__ = "2016/04/19 (initial version); 2016/04/25 (last revision)"
 
 import os
 from itertools import izip
@@ -138,14 +138,21 @@ def gen_ch():
 
 def test_decor():
     import decor
-    h, font = select_font('Arial.ttf', 40)
+    h, font = select_font('arial.ttf', 40)
     im = gen_ch_pic('A', font)
 
     #im = decor.extract_fore(im, fg_color=255)
-    #im = decor.add_edge(im, fg_color=255)
+    im = decor.add_edge(im, fg_color=255, eg_color=128)
     #im = decor.add_shadow11(im, fg_color=255)
     #im = decor.add_shadow21(im, fg_color=255)
-    im.show()
+
+    lum = im.convert('L')
+    #alpha = lum.point(lambda x: x != 0 and 255)
+    #im = Image.merge('RGBA', (lum, lum, lum, alpha))
+    #im = im.convert('P')
+    im = im.convert('P', palette=Image.ADAPTIVE, colors=3, dither=Image.NONE)
+    im.putpalette([0,0,0, 255,0,0, 0,255,0])
+    im.save('A.png', transparency=0)
 
 
 def test_font():

@@ -158,28 +158,8 @@ def test_decor():
     im.save('A.png', transparency=0)
 
 
-def test_font():
-    def draw_txt(txt):
-        w, h = font.getsize(txt)
-        canvas_w, canvas_h = canvas.size
-        x = (canvas_w - w) / 2
-        print w
-        draw.text((x, y[0]), txt, font=font, fill='White')
-        y[0] += h
-
-    h, font = select_font('arial.ttf', 40)
-    canvas = Image.new('RGBA', (640, 480))
-    draw = ImageDraw.Draw(canvas)
-    y = [0]
-
-    draw_txt('File Name     Date              Time      ')
-    draw_txt('000000C1    2014/10/21    02:12:22')
-    canvas.show()
-
-
 def main():
     #gen_ch()
-    #test_font()
     test_decor()
 
 if __name__ == '__main__':

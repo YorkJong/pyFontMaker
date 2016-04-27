@@ -40,9 +40,8 @@ def read_unicode(fn):
     """
     from codecs import BOM_UTF16_LE, BOM_UTF16_BE, BOM_UTF8
 
-    in_file = open(fn, "rb")
-    bs = in_file.read()
-    in_file.close()
+    with open(fn, "rb") as f:
+        bs = f.read()
 
     if  bs.startswith(BOM_UTF16_LE):
         us = bs.decode("utf_16_le").lstrip(BOM_UTF16_LE.decode("utf_16_le"))
@@ -52,14 +51,6 @@ def read_unicode(fn):
         us = bs.decode("utf_8").lstrip(BOM_UTF8.decode("utf_8"))
 
     return us
-
-
-def save_utf8_file(fn, lines):
-    """Save string lines into an UTF8 text files.
-    """
-    out_file = open(fn, 'w')
-    out_file.write("\n".join(lines).encode('utf-8'))
-    out_file.close()
 
 
 def read_char_list(fn):
@@ -74,42 +65,6 @@ def read_char_list(fn):
     return chars
 
 
-def sym_name(char):
-    """Name a *char* if it is a reserved char in a filename on MS Windows.
-
-    Example
-    -------
-    >>> sym_name('<')
-    'less'
-    >>> sym_name('A')
-    'A'
-    """
-    sym_chars = r''' !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~'''
-    names = ['space', 'exclam', 'dquotes', 'sharp', 'dollar', 'percent',
-            'ampersand', 'quote', 'LParenthesis', 'RParenthesis', 'asterisk',
-            'plus', 'comma', 'minus', 'period', 'slash', 'colon', 'semicolon',
-            'less', 'equal', 'greater', 'question', 'at', 'LBracket',
-            'backslash', 'RBracket', 'caret', 'underscore', 'grave', 'LBrace',
-            'pipe', 'RBrace', 'tilde']
-
-    name_from_char = dict(izip(sym_chars, names))
-    return name_from_char.get(char, char)
-
-
-def filename_from_chars(chars):
-    low_if_low = lambda x: 'LOW_' + x if len(x)==1 and x.islower() else x
-    upp_if_upp = lambda x: 'UPP_' + x if len(x)==1 and x.isupper() else x
-    num_if_num = lambda x: 'NUM_' + x if len(x)==1 and x.isdigit() else x
-    sym_if_sym = lambda x: 'SYM_' + sym_name(x) if len(x)==1 else x
-
-    # apply name mangling
-    chars = [low_if_low(x) for x in chars]
-    chars = [upp_if_upp(x) for x in chars]
-    chars = [num_if_num(x) for x in chars]
-    chars = [sym_if_sym(x) for x in chars]
-    return ['CH_'+x for x in chars]
-
-
 def gen_ch_pic(ch, font, color='White'):
     canvas = Image.new('RGBA', font.getsize(ch))
     draw = ImageDraw.Draw(canvas)
@@ -118,22 +73,6 @@ def gen_ch_pic(ch, font, color='White'):
     return canvas
 
 #------------------------------------------------------------------------------
-
-
-def gen_ch():
-    h, font = select_font('arial.ttf', 40)
-    #h, font = select_font('Monaco.ttf', 40)
-    chars = read_char_list('char.lst')
-    fns = ['%s.png' % x for x in filename_from_chars(chars)]
-    save_utf8_file('res_font.lst', fns)
-
-    dir_name = 'font'
-    if not os.path.isdir(dir_name):
-        os.makedirs(dir_name)
-    fns = [dir_name + '/' + x for x in fns]
-    for ch, fn in zip(chars, fns):
-        im = gen_ch_pic(ch, font)
-        im.save(fn)
 
 
 def test_decor():
@@ -159,8 +98,7 @@ def test_decor():
 
 
 def main():
-    #gen_ch()
-    test_decor()
+    #test_decor()
 
 if __name__ == '__main__':
     main()

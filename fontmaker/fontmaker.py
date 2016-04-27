@@ -77,51 +77,57 @@ def read_filename_list(fn):
     return list(lines)
 
 
-def gen_ch_pic(ch, font, color='White'):
-    canvas = Image.new('RGBA', font.getsize(ch))
+def gen_ch_pic(ch, font, fg_color='White', bg_color='Black'):
+    canvas = Image.new('RGB', font.getsize(ch), bg_color)
     draw = ImageDraw.Draw(canvas)
-    draw.text((0,0), ch, font=font, fill=color)
+    draw.text((0,0), ch, font=font, fill=fg_color)
     del draw
     return canvas
 
 #------------------------------------------------------------------------------
 
 def gen_fore_pics(chars, filenames, font, color):
+    def gen_ch_pic(ch, font, fg_color):
+        canvas = Image.new('RGBA', font.getsize(ch))
+        draw = ImageDraw.Draw(canvas)
+        draw.text((0,0), ch, font=font, fill=fg_color)
+        del draw
+        return canvas
+
     for ch, fn in zip(chars, filenames):
         im = gen_ch_pic(ch, font, color)
         im.save(fn)
 
 
-def _apply_color(im, fg_color, eg_color):
+def _apply_color(im, fg_color, eg_color, bg_color):
     im = im.convert('L')
     im = im.convert('P', palette=Image.ADAPTIVE, colors=3, dither=Image.NONE)
-    bg_color = ImageColor.getrgb('black')
-    im.putpalette(list(fg_color) + list(eg_color) + list(bg_color))
+    im.putpalette(list(bg_color) + list(eg_color) + list(fg_color))
     return im
 
 
 def gen_edge_pics(chars, filenames, font, fg_color, eg_color):
     for ch, fn in zip(chars, filenames):
-        im = gen_ch_pic(ch, font, 'White')
-        im = decor.add_edge(im, fg_color=255, eg_color=128)
-        im = _apply_color(im, fg_color, eg_color)
-        im.save(fn, transparency=2)
+        im = gen_ch_pic(ch, font, 'Black', 'White')
+        im = decor.add_edge(im, fg_color=0, eg_color=128, bg_color=255)
+        im = _apply_color(im, fg_color, eg_color, ImageColor.getrgb('Black'))
+        im.save(fn, transparency=0)
 
 
 def gen_shadow11_pics(chars, filenames, font, fg_color, eg_color):
     for ch, fn in zip(chars, filenames):
-        im = gen_ch_pic(ch, font, 'White')
-        im = decor.add_shadow11(im, fg_color=255, eg_color=128)
-        im = _apply_color(im, fg_color, eg_color)
-        im.save(fn, transparency=2)
+        im = gen_ch_pic(ch, font, 'Black', 'White')
+        im = decor.add_shadow11(im, fg_color=0, eg_color=128, bg_color=255)
+        im = _apply_color(im, fg_color, eg_color, ImageColor.getrgb('Black'))
+        im.save(fn, transparency=0)
 
 
 def gen_shadow21_pics(chars, filenames, font, fg_color, eg_color):
     for ch, fn in zip(chars, filenames):
-        im = gen_ch_pic(ch, font, 'White')
-        im = decor.add_shadow21(im, fg_color=255, eg_color=128)
-        im = _apply_color(im, fg_color, eg_color)
-        im.save(fn, transparency=2)
+        im = gen_ch_pic(ch, font, 'Black', 'White')
+        im = decor.add_shadow21(im, fg_color=0, eg_color=128, bg_color=255)
+        im = _apply_color(im, fg_color, eg_color, ImageColor.getrgb('Black'))
+        im.save(fn, transparency=0)
 
 #------------------------------------------------------------------------------
 
@@ -282,25 +288,30 @@ def main():
 def test():
     import decor
     h, font = select_font('arial.ttf', 40)
-    im = gen_ch_pic('A', font)
+    im = gen_ch_pic('A', font, fg_color='black', bg_color='white')
+    im.save('A0.png')
 
-    #im = decor.extract_fore(im, fg_color=255)
-    #im = decor.add_edge(im, fg_color=255, eg_color=128)
-    im = decor.add_shadow11(im, fg_color=255, eg_color=128)
-    #im = decor.add_shadow21(im, fg_color=255, eg_color=128)
+    fg_color, eg_color, bg_color = 0, 128, 255
+    im = decor.add_edge(im, fg_color, eg_color, bg_color)
+    #im = decor.add_shadow11(im, fg_color, eg_color, bg_color)
+    #im = decor.add_shadow21(im, fg_color, eg_color, bg_color)
 
     #lum = im.convert('L')
     #alpha = lum.point(lambda x: x != 0 and 255)
     #im = Image.merge('RGBA', (lum, lum, lum, alpha))
     #im = im.convert('P')
-    im = im.convert('RGB')
-    im = im.convert('P', palette=Image.ADAPTIVE, colors=4, dither=Image.NONE)
+    im = im.convert('L')
+    im = im.convert('P', palette=Image.ADAPTIVE, colors=3)
+    im.save('A1.png')
 
     bg = ImageColor.getrgb('black')
     fg = ImageColor.getrgb('red')
     eg = ImageColor.getrgb('green')
-    im.putpalette(list(bg) + list(fg) + list(eg))
-    im.save('A1.png', transparency=2)
+    im.putpalette(list(bg) + list(eg) + list(fg))
+    #im.putpalette(list(fg) + list(eg) + list(bg))
+    #w, h = im.size
+    #im = im.crop((1,1, w-1, h-1))
+    im.save('A2.png', transparency=0)
 
 
 if __name__ == '__main__':

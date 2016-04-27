@@ -65,6 +65,15 @@ def read_char_list(fn):
     return chars
 
 
+def read_filename_list(fn):
+    lines = read_unicode(fn).splitlines()
+    lines = (x.rstrip() for x in lines)
+    lines = (x for x in lines if len(x) > 0 and not x.startswith('#'))
+    lines = (x for x in lines if not x.startswith(':'))
+
+    return list(lines)
+
+
 def gen_ch_pic(ch, font, color='White'):
     canvas = Image.new('RGBA', font.getsize(ch))
     draw = ImageDraw.Draw(canvas)
@@ -99,6 +108,11 @@ def test_decor():
 
 def main():
     #test_decor()
+    fns = read_filename_list('../bin/filename.lst')
+    print fns
+    chars = read_char_list('../bin/char.lst')
+    assert len(fns) == len(chars)
+
 
 if __name__ == '__main__':
     main()

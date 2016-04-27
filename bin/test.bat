@@ -16,7 +16,7 @@ echo =^> Generate font picture of only foreground.
 
 set dir=edge
 echo =^> Generate font pictures with 1-pixel edge.
-%fontmaker% edge -n%name% -d%dir% -cWhite -eGray -f%font% -s40 %chars%
+%fontmaker% edge -n%name% -d%dir% -cRed -eGreen -f%font% -s40 %chars%
 
 set dir=shadow11
 echo =^> Generate font pictures with 1x1 shadow.
@@ -24,6 +24,6 @@ echo =^> Generate font pictures with 1x1 shadow.
 
 set dir=shadow21
 echo =^> Generate font pictures with 2x1 shadow.
-%fontmaker% shadow21 -n%name% -d%dir% -cWhite -eGray -f%font% -s40 %chars%
+%fontmaker% shadow21 -n%name% -d%dir% -cRed -eGreen -f%font% -s40 %chars%
 
 pause

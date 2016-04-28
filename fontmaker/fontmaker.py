@@ -18,6 +18,9 @@ import decor
 
 #------------------------------------------------------------------------------
 
+MIN_FONT_SIZE = 7
+MAX_FONT_SIZE = 100
+
 def select_font(filename, height):
     """
     Return an (actual height, font) pair with given truetype font file and
@@ -30,7 +33,7 @@ def select_font(filename, height):
     height
         the upper bound of height of the givent font
     """
-    for i in xrange(70, 7, -1):
+    for i in xrange(MAX_FONT_SIZE, MIN_FONT_SIZE-1, -1):
         font = ImageFont.truetype(filename, i)
         w, h = font.getsize('W')    # Character 'W' may be the largest one.
         if h <= height:
@@ -237,7 +240,7 @@ def parse_args(args):
     size = argparse.ArgumentParser(add_help=False)
     size.set_defaults(size=40)
     size.add_argument('-s', '--size', metavar='<number>',
-        type=int, choices=range(7, 200),
+        type=int, choices=range(MIN_FONT_SIZE, MAX_FONT_SIZE+1),
         help='''assign a font size.
             The default size is "%d".
             ''' % size.get_default('size'))
@@ -305,9 +308,9 @@ def test():
     im = _gen_ch_pic('A', font, fg_level, bg_level)
     im.save('A0.png')
 
-    im = decor.add_edge(im, fg_level, eg_level, bg_level)
+    #im = decor.add_edge(im, fg_level, eg_level, bg_level)
     #im = decor.add_shadow11(im, fg_level, eg_level, bg_level)
-    #im = decor.add_shadow21(im, fg_level, eg_level, bg_level)
+    im = decor.add_shadow21(im, fg_level, eg_level, bg_level)
 
     #lum = im.convert('L')
     #alpha = lum.point(lambda x: x != 0 and 255)
@@ -321,10 +324,9 @@ def test():
     fg = ImageColor.getrgb('red')
     eg = ImageColor.getrgb('green')
     im.putpalette(list(bg) + list(eg) + list(fg))
-    #im.putpalette(list(fg) + list(eg) + list(bg))
-    #w, h = im.size
-    #im = im.crop((1,1, w-1, h-1))
     im.save('A2.png', transparency=0)
+
+    os.system('pause')
 
 
 if __name__ == '__main__':

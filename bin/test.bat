@@ -6,7 +6,7 @@ set outfile=filename.lst
 echo =^> Generate a filename list file (%outfile%).
 %fontmaker% name -o%outfile% char.lst
 
-set name=filename.lst
+set name=%outfile%
 set chars=char.lst
 set font=arial.ttf
 

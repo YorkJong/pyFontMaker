@@ -41,12 +41,32 @@ on generacted pictures.
 - A line prefixing `#` denotes a comment line.
 
 ### Sample pictures in *fore* directory ###
+![CH_UPP_A.png](https://bitbucket.org/repo/LBeE8q/images/4150482962-CH_UPP_A.png)
+![CH_UPP_B.png](https://bitbucket.org/repo/LBeE8q/images/964284856-CH_UPP_B.png)
+![CH_UPP_C.png](https://bitbucket.org/repo/LBeE8q/images/577090888-CH_UPP_C.png)
+![CH_UPP_D.png](https://bitbucket.org/repo/LBeE8q/images/2647317553-CH_UPP_D.png)
+![CH_UPP_E.png](https://bitbucket.org/repo/LBeE8q/images/1037804330-CH_UPP_E.png)
 
 ### Sample pictures in *edge* directory ###
+![CH_UPP_A.png](https://bitbucket.org/repo/LBeE8q/images/4181468742-CH_UPP_A.png)
+![CH_UPP_B.png](https://bitbucket.org/repo/LBeE8q/images/1260088721-CH_UPP_B.png)
+![CH_UPP_C.png](https://bitbucket.org/repo/LBeE8q/images/1193707189-CH_UPP_C.png)
+![CH_UPP_D.png](https://bitbucket.org/repo/LBeE8q/images/3547108568-CH_UPP_D.png)
+![CH_UPP_E.png](https://bitbucket.org/repo/LBeE8q/images/2844905517-CH_UPP_E.png)
 
 ### Sample pictures in *shadow11* directory ###
+![CH_UPP_A.png](https://bitbucket.org/repo/LBeE8q/images/2890280662-CH_UPP_A.png)
+![CH_UPP_B.png](https://bitbucket.org/repo/LBeE8q/images/971463941-CH_UPP_B.png)
+![CH_UPP_C.png](https://bitbucket.org/repo/LBeE8q/images/1298220557-CH_UPP_C.png)
+![CH_UPP_D.png](https://bitbucket.org/repo/LBeE8q/images/3289542670-CH_UPP_D.png)
+![CH_UPP_E.png](https://bitbucket.org/repo/LBeE8q/images/399595151-CH_UPP_E.png)
 
 ### Sample pictures in *shadow21* directory ###
+![CH_UPP_A.png](https://bitbucket.org/repo/LBeE8q/images/1779304773-CH_UPP_A.png)
+![CH_UPP_B.png](https://bitbucket.org/repo/LBeE8q/images/1169028918-CH_UPP_B.png)
+![CH_UPP_C.png](https://bitbucket.org/repo/LBeE8q/images/2137979987-CH_UPP_C.png)
+![CH_UPP_D.png](https://bitbucket.org/repo/LBeE8q/images/1158313839-CH_UPP_D.png)
+![CH_UPP_E.png](https://bitbucket.org/repo/LBeE8q/images/3408953778-CH_UPP_E.png)
 
 
 ## Command Line ##

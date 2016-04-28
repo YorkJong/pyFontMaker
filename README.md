@@ -19,7 +19,7 @@ on generacted pictures.
 1. Install FontMaker.
 2. Edit the *char.lst*
 4. Run `demo.bat`.
-    - This will generate filename.lst and character pictures.
+    - This will generate *filename.lst* and character pictures.
     - The character pictures are classified with specific directories
         - *fore* directory contains undecorated/raw character pictures.
         - *edge* directory contains those pictures with adding edge.
@@ -39,6 +39,14 @@ on generacted pictures.
 ```
 - The character list file lists characters to be generated.
 - A line prefixing `#` denotes a comment line.
+
+### Sample pictures in *fore* directory ###
+
+### Sample pictures in *edge* directory ###
+
+### Sample pictures in *shadow11* directory ###
+
+### Sample pictures in *shadow21* directory ###
 
 
 ## Command Line ##

@@ -103,7 +103,7 @@ def _gen_ch_pic(ch, font, fg_level, bg_level):
 
 
 def _apply_color(im, fg_level, eg_level, bg_level):
-    im = im.convert('P', palette=Image.ADAPTIVE, colors=3, dither=Image.NONE)
+    im = im.convert('P', palette=Image.ADAPTIVE, colors=3)
     im.putpalette(list(bg_level) + list(eg_level) + list(fg_level))
     return im
 
@@ -312,11 +312,6 @@ def test():
     #im = decor.add_shadow11(im, fg_level, eg_level, bg_level)
     im = decor.add_shadow21(im, fg_level, eg_level, bg_level)
 
-    #lum = im.convert('L')
-    #alpha = lum.point(lambda x: x != 0 and 255)
-    #im = Image.merge('RGBA', (lum, lum, lum, alpha))
-    #im = im.convert('P')
-    im = im.convert('L')
     im = im.convert('P', palette=Image.ADAPTIVE, colors=3)
     im.save('A1.png')
 

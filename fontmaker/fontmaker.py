@@ -3,7 +3,7 @@
 Generate charater pictures with edge/shadow.
 """
 __software__ = "Font Maker"
-__version__ = "0.20"
+__version__ = "0.21"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
 __date__ = "2016/04/19 (initial version); 2016/04/28 (last revision)"
 
@@ -380,7 +380,7 @@ def test():
 
 
 if __name__ == '__main__':
-    #main()
-    parse_args(sys.argv[1:])
+    main()
+    #parse_args(sys.argv[1:])
     #test()
 

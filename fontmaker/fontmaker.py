@@ -3,9 +3,9 @@
 Generate charater pictures, character list file, and test message with a font.
 """
 __software__ = "Font Maker"
-__version__ = "0.01"
+__version__ = "0.03"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
-__date__ = "2016/04/19 (initial version); 2016/04/25 (last revision)"
+__date__ = "2016/04/19 (initial version); 2016/04/28 (last revision)"
 
 import os
 import sys
@@ -76,14 +76,6 @@ def read_filename_list(fn):
 
     return list(lines)
 
-
-def gen_ch_pic(ch, font, fg_color='White', bg_color='Black'):
-    canvas = Image.new('RGB', font.getsize(ch), bg_color)
-    draw = ImageDraw.Draw(canvas)
-    draw.text((0,0), ch, font=font, fill=fg_color)
-    del draw
-    return canvas
-
 #------------------------------------------------------------------------------
 
 def gen_fore_pics(chars, filenames, font, color):
@@ -99,34 +91,44 @@ def gen_fore_pics(chars, filenames, font, color):
         im.save(fn)
 
 
-def _apply_color(im, fg_color, eg_color, bg_color):
-    im = im.convert('L')
+def _gen_ch_pic(ch, font, fg_level, bg_level):
+    canvas = Image.new('L', font.getsize(ch), bg_level)
+    draw = ImageDraw.Draw(canvas)
+    draw.text((0,0), ch, font=font, fill=fg_level)
+    del draw
+    return canvas
+
+
+def _apply_color(im, fg_level, eg_level, bg_level):
     im = im.convert('P', palette=Image.ADAPTIVE, colors=3, dither=Image.NONE)
-    im.putpalette(list(bg_color) + list(eg_color) + list(fg_color))
+    im.putpalette(list(bg_level) + list(eg_level) + list(fg_level))
     return im
 
 
-def gen_edge_pics(chars, filenames, font, fg_color, eg_color):
+def gen_edge_pics(chars, filenames, font, fg_color, eg_color, bg_color):
+    fg_level, eg_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
-        im = gen_ch_pic(ch, font, 'Black', 'White')
-        im = decor.add_edge(im, fg_color=0, eg_color=128, bg_color=255)
-        im = _apply_color(im, fg_color, eg_color, ImageColor.getrgb('Black'))
+        im = _gen_ch_pic(ch, font, fg_level, bg_level)
+        im = decor.add_edge(im, fg_level, eg_level, bg_level)
+        im = _apply_color(im, fg_color, eg_color, bg_color)
         im.save(fn, transparency=0)
 
 
-def gen_shadow11_pics(chars, filenames, font, fg_color, eg_color):
+def gen_shadow11_pics(chars, filenames, font, fg_color, eg_color, bg_color):
+    fg_level, eg_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
-        im = gen_ch_pic(ch, font, 'Black', 'White')
-        im = decor.add_shadow11(im, fg_color=0, eg_color=128, bg_color=255)
-        im = _apply_color(im, fg_color, eg_color, ImageColor.getrgb('Black'))
+        im = _gen_ch_pic(ch, font, fg_level, bg_level)
+        im = decor.add_shadow11(im, fg_level, eg_level, bg_level)
+        im = _apply_color(im, fg_color, eg_color, bg_color)
         im.save(fn, transparency=0)
 
 
-def gen_shadow21_pics(chars, filenames, font, fg_color, eg_color):
+def gen_shadow21_pics(chars, filenames, font, fg_color, eg_color, bg_color):
+    fg_level, eg_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
-        im = gen_ch_pic(ch, font, 'Black', 'White')
-        im = decor.add_shadow21(im, fg_color=0, eg_color=128, bg_color=255)
-        im = _apply_color(im, fg_color, eg_color, ImageColor.getrgb('Black'))
+        im = _gen_ch_pic(ch, font, fg_level, bg_level)
+        im = decor.add_shadow21(im, fg_level, eg_level, bg_level)
+        im = _apply_color(im, fg_color, eg_color, bg_color)
         im.save(fn, transparency=0)
 
 #------------------------------------------------------------------------------
@@ -153,17 +155,19 @@ def parse_args(args):
     def do_edge(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
         h, font = select_font(args.font, args.size)
-        gen_edge_pics(args.chars, fns, font, args.fore, args.edge)
+        gen_edge_pics(args.chars, fns, font, args.fore, args.edge, args.back)
 
     def do_shadow11(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
         h, font = select_font(args.font, args.size)
-        gen_shadow11_pics(args.chars, fns, font, args.fore, args.edge)
+        gen_shadow11_pics(args.chars, fns, font,
+                          args.fore, args.edge, args.back)
 
     def do_shadow21(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
         h, font = select_font(args.font, args.size)
-        gen_shadow21_pics(args.chars, fns, font, args.fore, args.edge)
+        gen_shadow21_pics(args.chars, fns, font,
+                          args.fore, args.edge, args.back)
 
     #--------------------------------------------------------------------------
 
@@ -213,6 +217,14 @@ def parse_args(args):
             The default <color> is "%s".
             ''' % edge.get_default('edge'))
 
+    # create the parent parser of background color
+    back = argparse.ArgumentParser(add_help=False)
+    back.set_defaults(back='black')
+    back.add_argument('-b', '--back', metavar='<color>', type=rgb,
+        help='''assign the <color> of background.
+            The default <color> is "%s".
+            ''' % back.get_default('back'))
+
     # create the parent parser of font name
     font = argparse.ArgumentParser(add_help=False)
     font.set_defaults(font='arial.ttf')
@@ -249,20 +261,20 @@ def parse_args(args):
 
     # create the parser for the "edge" command
     sub = subparsers.add_parser('edge',
-        parents=[src, name, dir, font, size, fore, edge],
+        parents=[src, name, dir, font, size, fore, edge, back],
         help='Generate font pictures with 1-pixel edge.')
     sub.set_defaults(func=do_edge)
 
     # create the parser for the "shadow11" command
     sub = subparsers.add_parser('shadow11',
-        parents=[src, name, dir, font, size, fore, edge],
+        parents=[src, name, dir, font, size, fore, edge, back],
         help='''Generate font pictures with shadow of 1 pixel on right, 1 pixel
             on bottom''')
     sub.set_defaults(func=do_shadow11)
 
     # create the parser for the "shadow21" command
     sub = subparsers.add_parser('shadow21',
-        parents=[src, name, dir, font, size, fore, edge],
+        parents=[src, name, dir, font, size, fore, edge, back],
         help='''Generate font pictures with shadow of 2 pixel on right, 1 pixel
             on bottom.''')
     sub.set_defaults(func=do_shadow21)
@@ -288,13 +300,14 @@ def main():
 def test():
     import decor
     h, font = select_font('arial.ttf', 40)
-    im = gen_ch_pic('A', font, fg_color='black', bg_color='white')
+
+    fg_level, eg_level, bg_level = 0, 128, 255
+    im = _gen_ch_pic('A', font, fg_level, bg_level)
     im.save('A0.png')
 
-    fg_color, eg_color, bg_color = 0, 128, 255
-    im = decor.add_edge(im, fg_color, eg_color, bg_color)
-    #im = decor.add_shadow11(im, fg_color, eg_color, bg_color)
-    #im = decor.add_shadow21(im, fg_color, eg_color, bg_color)
+    im = decor.add_edge(im, fg_level, eg_level, bg_level)
+    #im = decor.add_shadow11(im, fg_level, eg_level, bg_level)
+    #im = decor.add_shadow21(im, fg_level, eg_level, bg_level)
 
     #lum = im.convert('L')
     #alpha = lum.point(lambda x: x != 0 and 255)

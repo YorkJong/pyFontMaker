@@ -3,7 +3,7 @@
 FontMaker is an open source Python application to generate character pictures
 with given font. A character list file lists characters to be generated. This
 application also provides color assignment features and edging/shadowing effects
-on generacted pictures.
+on generated pictures.
 """
 __software__ = "Font Maker"
 __version__ = "0.21"

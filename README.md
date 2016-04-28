@@ -1,4 +1,4 @@
-# LangConvert #
+# FontMaker #
 
 FontMaker is an open source Python application to generate character pictures
 with given font. A character list file lists characters to be generated. This

@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Generate charater pictures, character list file, and test message with a font.
+Generate charater pictures with edge/shadow.
 """
 __software__ = "Font Maker"
-__version__ = "0.03"
+__version__ = "0.20"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
 __date__ = "2016/04/19 (initial version); 2016/04/28 (last revision)"
 
@@ -17,29 +17,8 @@ from PIL import ImageFont, Image, ImageDraw, ImageColor
 import decor
 
 #------------------------------------------------------------------------------
-
-MIN_FONT_SIZE = 7
-MAX_FONT_SIZE = 100
-
-def select_font(filename, height):
-    """
-    Return an (actual height, font) pair with given truetype font file and
-    the upper bound of height.
-
-    Arguments
-    ---------
-    filename
-        a filename of a truetype font
-    height
-        the upper bound of height of the givent font
-    """
-    for i in xrange(MAX_FONT_SIZE, MIN_FONT_SIZE-1, -1):
-        font = ImageFont.truetype(filename, i)
-        w, h = font.getsize('W')    # Character 'W' may be the largest one.
-        if h <= height:
-            break
-    return h, font
-
+# Text File Read/Write
+#------------------------------------------------------------------------------
 
 def read_unicode(fn):
     """Read an Unicode file that may encode with utf_16_le, utf_16_be, or utf_8.
@@ -79,6 +58,79 @@ def read_filename_list(fn):
 
     return list(lines)
 
+#------------------------------------------------------------------------------
+
+def save_utf8_file(fn, lines):
+    """Save string lines into an UTF8 text files.
+    """
+    with open(fn, 'w') as out_file:
+        out_file.write("\n".join(lines).encode('utf-8'))
+
+#------------------------------------------------------------------------------
+# Misc
+#------------------------------------------------------------------------------
+
+MIN_FONT_SIZE = 7
+MAX_FONT_SIZE = 100
+
+def select_font(filename, height):
+    """
+    Return an (actual height, font) pair with given truetype font file and
+    the upper bound of height.
+
+    Arguments
+    ---------
+    filename
+        a filename of a truetype font
+    height
+        the upper bound of height of the givent font
+    """
+    for i in xrange(MAX_FONT_SIZE, MIN_FONT_SIZE-1, -1):
+        font = ImageFont.truetype(filename, i)
+        w, h = font.getsize('W')    # Character 'W' may be the largest one.
+        if h <= height:
+            break
+    return h, font
+
+#------------------------------------------------------------------------------
+
+def sym_name(char):
+    """Name a *char* if it is a reserved char in a filename on MS Windows.
+
+    Example
+    -------
+    >>> sym_name('<')
+    'less'
+    >>> sym_name('A')
+    'A'
+    """
+    sym_chars = r''' !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~'''
+    names = ['space', 'exclam', 'dquotes', 'sharp', 'dollar', 'percent',
+            'ampersand', 'quote', 'LParenthesis', 'RParenthesis', 'asterisk',
+            'plus', 'comma', 'minus', 'period', 'slash', 'colon', 'semicolon',
+            'less', 'equal', 'greater', 'question', 'at', 'LBracket',
+            'backslash', 'RBracket', 'caret', 'underscore', 'grave', 'LBrace',
+            'pipe', 'RBrace', 'tilde']
+
+    name_from_char = dict(izip(sym_chars, names))
+    return name_from_char.get(char, char)
+
+
+def filename_from_chars(chars):
+    low_if_low = lambda x: 'LOW_' + x if len(x)==1 and x.islower() else x
+    upp_if_upp = lambda x: 'UPP_' + x if len(x)==1 and x.isupper() else x
+    num_if_num = lambda x: 'NUM_' + x if len(x)==1 and x.isdigit() else x
+    sym_if_sym = lambda x: 'SYM_' + sym_name(x) if len(x)==1 else x
+
+    # apply name mangling
+    chars = [low_if_low(x) for x in chars]
+    chars = [upp_if_upp(x) for x in chars]
+    chars = [num_if_num(x) for x in chars]
+    chars = [sym_if_sym(x) for x in chars]
+    return ['CH_'+x for x in chars]
+
+#------------------------------------------------------------------------------
+# Picture Generaors
 #------------------------------------------------------------------------------
 
 def gen_fore_pics(chars, filenames, font, color):
@@ -135,6 +187,8 @@ def gen_shadow21_pics(chars, filenames, font, fg_color, eg_color, bg_color):
         im.save(fn, transparency=0)
 
 #------------------------------------------------------------------------------
+# Command Line Interface
+#------------------------------------------------------------------------------
 
 def parse_args(args):
     def check_dir(name):
@@ -148,7 +202,8 @@ def parse_args(args):
         return ImageColor.getrgb(color)
 
     def do_name(args):
-        pass
+        fns = ['%s.png' % x for x in filename_from_chars(args.chars)]
+        save_utf8_file(args.outfile, fns)
 
     def do_fore(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]

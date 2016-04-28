@@ -1,5 +1,5 @@
 @echo off
-set fontmaker=..\fontmaker\fontmaker.py
+set fontmaker=fontmaker.exe
 
 
 %fontmaker% -h

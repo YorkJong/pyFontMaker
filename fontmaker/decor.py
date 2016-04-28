@@ -15,7 +15,7 @@ import glob
 from PIL import Image, ImageFilter
 
 
-def find_edge(im, fg_level):
+def _find_edge(im, fg_level):
     """Find and mask out the dege
     """
     w, h = im.size
@@ -30,10 +30,11 @@ def find_edge(im, fg_level):
 def add_edge(im, fg_level, eg_level, bg_level=0):
     """Add edge to an image
     """
+    assert fg_level != eg_level != bg_level
     out = im.copy()
     mask = im.point(lambda x: x != bg_level and 255).convert('L')
     out.paste(im, (0, 0), mask)     # foreground
-    mask = find_edge(im, fg_level)
+    mask = _find_edge(im, fg_level)
     edge = mask.point(lambda x: x == 255 and eg_level)
     out.paste(edge, (0, 0), mask)   # edge
     return out
@@ -42,6 +43,7 @@ def add_edge(im, fg_level, eg_level, bg_level=0):
 def add_shadow11(im, fg_level, eg_level, bg_level=0):
     """Add shadow of 1 pixel on right, 1 pixel on bottom
     """
+    assert fg_level != eg_level != bg_level
     shadow = im.point(lambda x: x == fg_level and eg_level)
     mask = im.point(lambda x: x == fg_level and 255).convert('L')
 
@@ -57,6 +59,7 @@ def add_shadow11(im, fg_level, eg_level, bg_level=0):
 def add_shadow21(im, fg_level, eg_level, bg_level=0):
     """Add shadow of 2 pixels on right, 1 pixel on bottom
     """
+    assert fg_level != eg_level != bg_level
     shadow = im.point(lambda x: x == fg_level and eg_level)
     mask = im.point(lambda x: x == fg_level and 255).convert('L')
 

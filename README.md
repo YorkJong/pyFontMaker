@@ -41,7 +41,7 @@ on generated pictures.
 - The character list file lists characters to be generated.
 - A line prefixing `#` denotes a comment line.
 
-### Sample *demo.bat* ###
+### A sample *demo.bat* ###
 ```batch
 @echo off
 set fontmaker=fontmaker.exe

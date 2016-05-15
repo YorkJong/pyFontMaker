@@ -18,6 +18,7 @@ on generated pictures.
 
 1. Install FontMaker.
 2. Edit the *char.lst*
+3. Edit the `demo.bat`
 4. Run `demo.bat`.
     - This will generate *filename.lst* and character pictures.
     - The character pictures are classified with specific directories
@@ -39,6 +40,39 @@ on generated pictures.
 ```
 - The character list file lists characters to be generated.
 - A line prefixing `#` denotes a comment line.
+
+### Sample *demo.bat* ###
+```batch
+@echo off
+set fontmaker=fontmaker.exe
+
+
+set outfile=filename.lst
+echo =^> Generate a filename list file (%outfile%).
+%fontmaker% name -o%outfile% char.lst
+
+set name=%outfile%
+set chars=char.lst
+set font=arial.ttf
+
+set dir=fore
+echo =^> Generate font picture of only foreground.
+%fontmaker% fore -n%name% -d%dir% -cGreen -f%font% -s40 %chars%
+
+set dir=edge
+echo =^> Generate font pictures with 1-pixel edge.
+%fontmaker% edge -n%name% -d%dir% -cRed -eGreen -f%font% -s40 %chars%
+
+set dir=shadow11
+echo =^> Generate font pictures with 1x1 shadow.
+%fontmaker% shadow11 -n%name% -d%dir% -cRed -eGreen -f%font% -s40 %chars%
+
+set dir=shadow21
+echo =^> Generate font pictures with 2x1 shadow.
+%fontmaker% shadow21 -n%name% -d%dir% -cRed -eGreen -f%font% -s40 %chars%
+
+pause
+```
 
 ### Sample pictures in *fore* directory ###
 ![CH_UPP_A.png](https://bitbucket.org/repo/LBeE8q/images/4150482962-CH_UPP_A.png)

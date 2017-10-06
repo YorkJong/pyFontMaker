@@ -90,9 +90,12 @@ def select_font(filename, height):
     """
     for i in xrange(MAX_FONT_SIZE, MIN_FONT_SIZE-1, -1):
         font = ImageFont.truetype(filename, i)
-        w, h = font.getsize('W')    # Character 'W' may be the largest one.
+        w, h = font.getsize('Hg')    # Character 'g' may be the highest one.
         if h <= height:
             break
+    #print "[INF] Font:{}; size:{}".format(filename, i)
+    #ascent, descent = font.getmetrics()
+    #(width, baseline), (offset_x, offset_y) = font.font.getsize(text)
     return h, font
 
 #------------------------------------------------------------------------------
@@ -135,6 +138,8 @@ def filename_from_chars(chars):
 #------------------------------------------------------------------------------
 # Picture Generaors
 #------------------------------------------------------------------------------
+
+FIXED_FONT_HEIGHT = False
 
 def gen_fore_pics(chars, filenames, font, color):
     def gen_ch_pic(ch, font, fg_color):

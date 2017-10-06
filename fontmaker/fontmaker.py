@@ -6,9 +6,9 @@ application also provides color assignment features and edging/shadowing effects
 on generated pictures.
 """
 __software__ = "Font Maker"
-__version__ = "0.21"
+__version__ = "0.22"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
-__date__ = "2016/04/19 (initial version); 2016/04/28 (last revision)"
+__date__ = "2016/04/19 (initial version); 2017/10/06 (last revision)"
 
 import os
 import sys
@@ -139,11 +139,13 @@ def filename_from_chars(chars):
 # Picture Generaors
 #------------------------------------------------------------------------------
 
-FIXED_FONT_HEIGHT = False
-
-def gen_fore_pics(chars, filenames, font, color):
+def gen_fore_pics(chars, filenames, font, color, fixed_height):
     def gen_ch_pic(ch, font, fg_color):
-        canvas = Image.new('RGBA', font.getsize(ch))
+        ch_w, ch_h = font.getsize(ch)
+        if fixed_height:
+            w, ch_h = font.getsize('g')     # get the max height of the font
+        size = (ch_w, ch_h)
+        canvas = Image.new('RGBA', size)
         draw = ImageDraw.Draw(canvas)
         draw.text((0,0), ch, font=font, fill=fg_color)
         del draw
@@ -154,8 +156,12 @@ def gen_fore_pics(chars, filenames, font, color):
         im.save(fn)
 
 
-def _gen_ch_pic(ch, font, fg_level, bg_level):
-    canvas = Image.new('L', font.getsize(ch), bg_level)
+def _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height):
+    ch_w, ch_h = font.getsize(ch)
+    if fixed_height:
+        w, ch_h = font.getsize('g')     # get the max height of the font
+    size = (ch_w, ch_h)
+    canvas = Image.new('L', size, bg_level)
     draw = ImageDraw.Draw(canvas)
     draw.text((0,0), ch, font=font, fill=fg_level)
     del draw
@@ -168,28 +174,31 @@ def _apply_color(im, fg_level, eg_level, bg_level):
     return im
 
 
-def gen_edge_pics(chars, filenames, font, fg_color, eg_color, bg_color):
+def gen_edge_pics(chars, filenames, font,
+                  fg_color, eg_color, bg_color, fixed_height):
     fg_level, eg_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
-        im = _gen_ch_pic(ch, font, fg_level, bg_level)
+        im = _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height)
         im = decor.add_edge(im, fg_level, eg_level, bg_level)
         im = _apply_color(im, fg_color, eg_color, bg_color)
         im.save(fn, transparency=0)
 
 
-def gen_shadow11_pics(chars, filenames, font, fg_color, eg_color, bg_color):
+def gen_shadow11_pics(chars, filenames, font,
+                      fg_color, eg_color, bg_color, fixed_height):
     fg_level, eg_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
-        im = _gen_ch_pic(ch, font, fg_level, bg_level)
+        im = _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height)
         im = decor.add_shadow11(im, fg_level, eg_level, bg_level)
         im = _apply_color(im, fg_color, eg_color, bg_color)
         im.save(fn, transparency=0)
 
 
-def gen_shadow21_pics(chars, filenames, font, fg_color, eg_color, bg_color):
+def gen_shadow21_pics(chars, filenames, font,
+                      fg_color, eg_color, bg_color, fixed_height):
     fg_level, eg_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
-        im = _gen_ch_pic(ch, font, fg_level, bg_level)
+        im = _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height)
         im = decor.add_shadow21(im, fg_level, eg_level, bg_level)
         im = _apply_color(im, fg_color, eg_color, bg_color)
         im.save(fn, transparency=0)
@@ -216,24 +225,25 @@ def parse_args(args):
     def do_fore(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
         h, font = select_font(args.font, args.size)
-        gen_fore_pics(args.chars, fns, font, args.fore)
+        gen_fore_pics(args.chars, fns, font, args.fore, args.fixed)
 
     def do_edge(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
         h, font = select_font(args.font, args.size)
-        gen_edge_pics(args.chars, fns, font, args.fore, args.edge, args.back)
+        gen_edge_pics(args.chars, fns, font,
+                      args.fore, args.edge, args.back, args.fixed)
 
     def do_shadow11(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
         h, font = select_font(args.font, args.size)
         gen_shadow11_pics(args.chars, fns, font,
-                          args.fore, args.edge, args.back)
+                          args.fore, args.edge, args.back, args.fixed)
 
     def do_shadow21(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
         h, font = select_font(args.font, args.size)
         gen_shadow21_pics(args.chars, fns, font,
-                          args.fore, args.edge, args.back)
+                          args.fore, args.edge, args.back, args.fixed)
 
     #--------------------------------------------------------------------------
 
@@ -299,7 +309,7 @@ def parse_args(args):
             The default font is "%s".
             ''' % font.get_default('font'))
 
-    # create the parent parser of font name
+    # create the parent parser of size
     size = argparse.ArgumentParser(add_help=False)
     size.set_defaults(size=40)
     size.add_argument('-s', '--size', metavar='<number>',
@@ -307,6 +317,12 @@ def parse_args(args):
         help='''assign a font size.
             The default size is "%d".
             ''' % size.get_default('size'))
+
+    # create the parent parser of fixed font height
+    fixed = argparse.ArgumentParser(add_help=False)
+    fixed.set_defaults(fixed=False)
+    fixed.add_argument('-H', '--fixed', action='store_true',
+        help='''turn on the switch to use fixed height of the font.''')
 
     #--------------------------------------------------------------------------
 
@@ -321,26 +337,26 @@ def parse_args(args):
 
     # create the parser for the "fore" command
     sub = subparsers.add_parser('fore',
-        parents=[src, name, dir, font, size, fore],
+        parents=[src, name, dir, font, size, fore, fixed],
         help='Generate font pictures of only foreground.')
     sub.set_defaults(func=do_fore)
 
     # create the parser for the "edge" command
     sub = subparsers.add_parser('edge',
-        parents=[src, name, dir, font, size, fore, edge, back],
+        parents=[src, name, dir, font, size, fore, edge, back, fixed],
         help='Generate font pictures with 1-pixel edge.')
     sub.set_defaults(func=do_edge)
 
     # create the parser for the "shadow11" command
     sub = subparsers.add_parser('shadow11',
-        parents=[src, name, dir, font, size, fore, edge, back],
+        parents=[src, name, dir, font, size, fore, edge, back, fixed],
         help='''Generate font pictures with shadow of 1 pixel on right, 1 pixel
             on bottom''')
     sub.set_defaults(func=do_shadow11)
 
     # create the parser for the "shadow21" command
     sub = subparsers.add_parser('shadow21',
-        parents=[src, name, dir, font, size, fore, edge, back],
+        parents=[src, name, dir, font, size, fore, edge, back, fixed],
         help='''Generate font pictures with shadow of 2 pixel on right, 1 pixel
             on bottom.''')
     sub.set_defaults(func=do_shadow21)

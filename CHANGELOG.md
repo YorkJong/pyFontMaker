@@ -1,3 +1,8 @@
+### 0.22 (2017-10-06)
+
+- Fixed select_font for considering max height of a font.
+- Added fixed option to use fixed height for generated font.
+
 ### 0.21 (2016-04-28)
 
 - Fixed edge command

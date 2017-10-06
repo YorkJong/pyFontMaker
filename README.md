@@ -166,6 +166,7 @@ optional arguments:
   -c <color>, --fore <color>
                         assign the <color> of foreground. The default <color>
                         is "white".
+  -H, --fixed           turn on the switch to use fixed height of the font.
 ```
 
 ### edge command ###
@@ -199,6 +200,7 @@ optional arguments:
   -b <color>, --back <color>
                         assign the <color> of background. The default <color>
                         is "black".
+  -H, --fixed           turn on the switch to use fixed height of the font.
 ```
 
 ### shadow11 command ###
@@ -233,6 +235,7 @@ optional arguments:
   -b <color>, --back <color>
                         assign the <color> of background. The default <color>
                         is "black".
+  -H, --fixed           turn on the switch to use fixed height of the font.
 ```
 
 ### shadow21 command ###
@@ -267,4 +270,5 @@ optional arguments:
   -b <color>, --back <color>
                         assign the <color> of background. The default <color>
                         is "black".
+  -H, --fixed           turn on the switch to use fixed height of the font.
 ```

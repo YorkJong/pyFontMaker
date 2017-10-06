@@ -12,7 +12,7 @@ set font=arial.ttf
 
 set dir=fore
 echo =^> Generate font picture of only foreground.
-%fontmaker% fore -n%name% -d%dir% -cGreen -f%font% -s40 %chars%
+%fontmaker% fore -n%name% -d%dir% -cGreen -f%font% -s40 -H %chars%
 
 set dir=edge
 echo =^> Generate font pictures with 1-pixel edge.

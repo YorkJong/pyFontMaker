@@ -1,3 +1,7 @@
+### 0.23 (2019-03-07)
+
+- Added the support of a bitmap font file (.pil)
+
 ### 0.22 (2017-10-06)
 
 - Fixed select_font for considering max height of a font.

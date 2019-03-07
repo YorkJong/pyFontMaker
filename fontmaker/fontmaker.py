@@ -6,9 +6,9 @@ application also provides color assignment features and edging/shadowing effects
 on generated pictures.
 """
 __software__ = "Font Maker"
-__version__ = "0.22"
+__version__ = "0.23"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
-__date__ = "2016/04/19 (initial version); 2017/10/06 (last revision)"
+__date__ = "2016/04/19 (initial version); 2019/03/07 (last revision)"
 
 import os
 import sys
@@ -88,6 +88,11 @@ def select_font(filename, height):
     height
         the upper bound of height of the givent font
     """
+    if filename.lower().endswith('.pil'):
+        font = ImageFont.load(filename)
+        w, h = font.getsize('g')
+        return h, font
+
     for i in xrange(MAX_FONT_SIZE, MIN_FONT_SIZE-1, -1):
         font = ImageFont.truetype(filename, i)
         w, h = font.getsize('Hg')    # Character 'g' may be the highest one.

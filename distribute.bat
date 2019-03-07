@@ -1,7 +1,7 @@
 @echo off
 
 set target=fontmaker
-set ver_num=0.22
+set ver_num=0.23
 set dist_name=FontMaker
 
 set dist_dir=%dist_name%-%ver_num%-bin

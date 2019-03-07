@@ -16,7 +16,7 @@ from PIL import Image, ImageFilter
 
 
 def _find_edge(im, fg_level, bg_level):
-    """Find and mask out the dege
+    """Find and mask out the edge
     """
     w, h = im.size
     im_out = Image.new('L', (w + 2, h + 2), bg_level)

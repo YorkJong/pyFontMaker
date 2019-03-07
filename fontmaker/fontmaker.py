@@ -156,7 +156,7 @@ def gen_fore_pics(chars, filenames, font, color, fixed_height):
         im.save(fn)
 
 
-def _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height):
+def _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height=True):
     ch_w, ch_h = font.getsize(ch)
     if fixed_height:
         w, ch_h = font.getsize('g')     # get the max height of the font
@@ -168,9 +168,12 @@ def _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height):
     return canvas
 
 
-def _apply_color(im, fg_level, eg_level, bg_level):
+def _apply_color(im, fg_color, eg_color, bg_color):
+    # using Image.ADAPTIVE to avoid dithering
     im = im.convert('P', palette=Image.ADAPTIVE, colors=3)
-    im.putpalette(list(bg_level) + list(eg_level) + list(fg_level))
+
+    # Index begins from maximal color value down to minimal color value
+    im.putpalette(list(bg_color) + list(eg_color) + list(fg_color))
     return im
 
 

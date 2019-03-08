@@ -8,7 +8,7 @@ on generated pictures.
 __software__ = "Font Maker"
 __version__ = "0.23"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
-__date__ = "2016/04/19 (initial version); 2019/03/07 (last revision)"
+__date__ = "2016/04/19 (initial version); 2019/03/08 (last revision)"
 
 import os
 import sys
@@ -78,13 +78,17 @@ MAX_FONT_SIZE = 100
 
 def select_font(filename, height):
     """
-    Return an (actual height, font) pair with given truetype font file and
-    the upper bound of height.
+    Return an (actual height, font) pair with given truetype font file (or PIL
+    bitmap font file) and the upper bound of width.
+
+    To convert BDF and PCF font descriptors (X window font formats) to PIL
+    format, you can type "pilfont.py *.bdf" or "pilfont *.pcf" in the command
+    line.
 
     Arguments
     ---------
     filename
-        a filename of a truetype font
+        a filename of a truetype font (.ttf) or PIL bitmap font (.pil)
     height
         the upper bound of height of the givent font
     """

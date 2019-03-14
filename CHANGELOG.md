@@ -1,6 +1,6 @@
-### 0.23 (2019-03-07)
+### 0.23 (2019-03-XX)
 
-- Added the support of a bitmap font file (.pil)
+- Added the support of a bitmap font file (.bdf, .pcf, .pil)
 
 ### 0.22 (2017-10-06)
 

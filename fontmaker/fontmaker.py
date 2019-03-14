@@ -6,9 +6,9 @@ application also provides color assignment features and edging/shadowing effects
 on generated pictures.
 """
 __software__ = "Font Maker"
-__version__ = "0.23"
+__version__ = "0.24"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
-__date__ = "2016/04/19 (initial version); 2019/03/08 (last revision)"
+__date__ = "2016/04/19 (initial version); 2019/03/15 (last revision)"
 
 import os
 import sys
@@ -16,6 +16,7 @@ from itertools import izip
 import argparse
 
 from PIL import ImageFont, Image, ImageDraw, ImageColor
+from PIL import BdfFontFile, PcfFontFile
 
 import decor
 
@@ -76,6 +77,37 @@ def save_utf8_file(fn, lines):
 MIN_FONT_SIZE = 7
 MAX_FONT_SIZE = 100
 
+
+def font_max_size(font):
+    """Return maxima (width, height) of a font between ' ' to '~'
+    """
+    w_max, h_max = 0, 0
+    for i in range(ord(' '), ord('~')+1):
+        w, h = font.getsize(chr(i))
+        if w > w_max:
+            w_max = w
+        if h > h_max:
+            h_max = h
+    return w_max, h_max
+
+
+def gen_pil_if_necessary(filename):
+    """Generate pil font if the input is a BDF file or a PCF file.
+    """
+    f_main, f_ext = os.path.splitext(filename)
+
+    if f_ext.lower() in ['.bdf', '.pcf']:
+        with open(filename, 'rb') as f:
+            try:
+                p = PcfFontFile.PcfFontFile(f)
+            except SyntaxError:
+                f.seek(0)
+                p = BdfFontFile.BdfFontFile(f)
+            p.save(filename)
+            filename = f_main + '.pil'
+    return filename
+
+
 def select_font(filename, height):
     """
     Return an (actual height, font) pair with given truetype font file (or PIL
@@ -88,20 +120,20 @@ def select_font(filename, height):
     Arguments
     ---------
     filename
-        a filename of a truetype font (.ttf) or PIL bitmap font (.pil)
+        a filename of a truetype font (.ttf) or bitmap font (.bdf, .pcf, .pil)
     height
         the upper bound of height of the givent font
     """
+    filename = gen_pil_if_necessary(filename)
     if filename.lower().endswith('.pil'):
         font = ImageFont.load(filename)
-        w, h = font.getsize('g')
-        return h, font
-
-    for i in xrange(MAX_FONT_SIZE, MIN_FONT_SIZE-1, -1):
-        font = ImageFont.truetype(filename, i)
-        w, h = font.getsize('Hg')    # Character 'g' may be the highest one.
-        if h <= height:
-            break
+        w, h = font_max_size(font)
+    else:
+        for i in xrange(height*3/2, MIN_FONT_SIZE-1, -1):
+            font = ImageFont.truetype(filename, i)
+            w, h = font_max_size(font)
+            if h <= height:
+                break
     #print "[INF] Font:{}; size:{}".format(filename, i)
     #ascent, descent = font.getmetrics()
     #(width, baseline), (offset_x, offset_y) = font.font.getsize(text)

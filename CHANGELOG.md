@@ -1,4 +1,4 @@
-### 0.23 (2019-03-XX)
+### 0.23 (2019-03-15)
 
 - Improved the rendering of small font on outline, shadow characters.
 - Added the support of X window bitmap font files (.bdf or .pcf)

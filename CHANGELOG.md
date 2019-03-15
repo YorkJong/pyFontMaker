@@ -1,7 +1,8 @@
 ### 0.23 (2019-03-XX)
 
-- Added the support of PIL bitmap font files (.pil)
+- Improved the rendering of small font on outline, shadow characters.
 - Added the support of X window bitmap font files (.bdf or .pcf)
+- Added the support of PIL bitmap font files (.pil)
 
 ### 0.22 (2017-10-06)
 

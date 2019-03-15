@@ -6,7 +6,7 @@ application also provides color assignment features and edging/shadowing effects
 on generated pictures.
 """
 __software__ = "Font Maker"
-__version__ = "0.24"
+__version__ = "0.23"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
 __date__ = "2016/04/19 (initial version); 2019/03/15 (last revision)"
 
@@ -80,6 +80,11 @@ MAX_FONT_SIZE = 100
 
 def font_max_size(font):
     """Return maxima (width, height) of a font between char ' ' to char '~'.
+
+    Arguments
+    ---------
+    font (ImageFont)
+        An ImageFont
     """
     w_max, h_max = 0, 0
     for i in range(ord(' '), ord('~')+1):
@@ -116,11 +121,11 @@ def select_font(filename, height):
 
     Arguments
     ---------
-    filename
+    filename (str)
         The font filename. It can be a TrueType (.ttf) or OpenType (.otf)
         fonts. It also can be a X Window bitmap font (.bdf, .pcf) or PIL bitmap
         font (.pil).
-    height
+    height (int)
         the upper bound of height of the givent font
     """
     filename = gen_pil_if_necessary(filename)
@@ -180,6 +185,21 @@ def filename_from_chars(chars):
 #------------------------------------------------------------------------------
 
 def gen_fore_pics(chars, filenames, font, color, fixed_height):
+    """Generate pictures drawing given characters.
+
+    Arguments
+    ---------
+    chars (str)
+        List characters to draw.
+    filenames (str, str...)
+        List filenames of characters.
+    font (ImageFont)
+        A font to draw.
+    color (ImageColor)
+        The color of drawing characters.
+    fixed_height (bool)
+        Decide if use the maxima height to draw the character.
+    """
     def gen_ch_pic(ch, font, fg_color):
         ch_w, ch_h = font.getsize(ch)
         if fixed_height:
@@ -197,18 +217,40 @@ def gen_fore_pics(chars, filenames, font, color, fixed_height):
 
 
 def _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height=True):
+    """Generate an image drawing a given character.
+
+    Arguments
+    ---------
+    ch (str)
+        a character to draw.
+    font (ImageFont)
+        the font.
+    fg_level (0..255)
+        the level for foregournd color.
+    bg_level (0..255)
+        the level of background color
+    fixed_height (bool)
+        Decide if use the maxima height to draw the character.
+    """
     ch_w, ch_h = font.getsize(ch)
     if fixed_height:
         w, ch_h = font.getsize('g')     # get the max height of the font
     size = (ch_w, ch_h)
-    canvas = Image.new('L', size, bg_level)
-    draw = ImageDraw.Draw(canvas)
-    draw.text((0,0), ch, font=font, fill=fg_level)
+    im = Image.new('1', size, color=1)
+    draw = ImageDraw.Draw(im)
+    draw.text((0, 0), ch, font=font, color=0)
     del draw
-    return canvas
+    im = im.convert('L')
+    mask = im.point(lambda x: x == 0 and 255)
+    text = mask.point(lambda x: x == 255 and fg_level)
+    im = Image.new('L', size, bg_level)
+    im.paste(text, (0, 0), mask)
+    return im
 
 
 def _apply_color(im, fg_color, eg_color, bg_color):
+    """Put a palette for an image with given colors.
+    """
     # using Image.ADAPTIVE to avoid dithering
     im = im.convert('P', palette=Image.ADAPTIVE, colors=3)
 
@@ -219,6 +261,8 @@ def _apply_color(im, fg_color, eg_color, bg_color):
 
 def gen_edge_pics(chars, filenames, font,
                   fg_color, eg_color, bg_color, fixed_height):
+    """Genarate a character image with a generated outline.
+    """
     fg_level, eg_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
         im = _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height)
@@ -229,6 +273,8 @@ def gen_edge_pics(chars, filenames, font,
 
 def gen_shadow11_pics(chars, filenames, font,
                       fg_color, eg_color, bg_color, fixed_height):
+    """Genarate a character image with a generated 1x1 shadow.
+    """
     fg_level, eg_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
         im = _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height)
@@ -239,6 +285,8 @@ def gen_shadow11_pics(chars, filenames, font,
 
 def gen_shadow21_pics(chars, filenames, font,
                       fg_color, eg_color, bg_color, fixed_height):
+    """Genarate a character image with a generated 2x1 shadow.
+    """
     fg_level, eg_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
         im = _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height)

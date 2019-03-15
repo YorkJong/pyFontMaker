@@ -1,6 +1,7 @@
 ### 0.23 (2019-03-XX)
 
-- Added the support of a bitmap font file (.bdf, .pcf, .pil)
+- Added the support of PIL bitmap font files (.pil)
+- Added the support of X window bitmap font files (.bdf or .pcf)
 
 ### 0.22 (2017-10-06)
 

@@ -79,7 +79,7 @@ MAX_FONT_SIZE = 100
 
 
 def font_max_size(font):
-    """Return maxima (width, height) of a font between ' ' to '~'
+    """Return maxima (width, height) of a font between char ' ' to char '~'.
     """
     w_max, h_max = 0, 0
     for i in range(ord(' '), ord('~')+1):
@@ -92,7 +92,8 @@ def font_max_size(font):
 
 
 def gen_pil_if_necessary(filename):
-    """Generate pil font if the input is a BDF file or a PCF file.
+    """Generate PIL bitmap font if the input is a X Window bitmap font (.bdf
+    or .pcf); and return the modified (if conversion happen) filename.
     """
     f_main, f_ext = os.path.splitext(filename)
 
@@ -113,14 +114,12 @@ def select_font(filename, height):
     Return an (actual height, font) pair with given truetype font file (or PIL
     bitmap font file) and the upper bound of width.
 
-    To convert BDF and PCF font descriptors (X window font formats) to PIL
-    format, you can type "pilfont.py *.bdf" or "pilfont *.pcf" in the command
-    line.
-
     Arguments
     ---------
     filename
-        a filename of a truetype font (.ttf) or bitmap font (.bdf, .pcf, .pil)
+        The font filename. It can be a TrueType (.ttf) or OpenType (.otf)
+        fonts. It also can be a X Window bitmap font (.bdf, .pcf) or PIL bitmap
+        font (.pil).
     height
         the upper bound of height of the givent font
     """

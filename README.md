@@ -8,7 +8,7 @@ on generated pictures.
 ## Install ##
 
 1. Download a binary distribution of FontMaker (e.g.,
-   *FontMaker-0.21-bin.zip*) from [Downloads][] page.
+   *FontMaker-0.24-bin.zip*) from [Downloads][] page.
 2. Uncompress the binary distribution.
 
 [Downloads]: https://bitbucket.org/YorkJong/pyfontmaker/downloads
@@ -23,7 +23,7 @@ on generated pictures.
     - This will generate *filename.lst* and character pictures.
     - The character pictures are classified with specific directories
         - *fore* directory contains undecorated/raw character pictures.
-        - *edge* directory contains those pictures with adding edge.
+        - *outline* directory contains those pictures with adding outline.
         - *shadow11* directory contains those pictures with light shadow.
         - *shadow21* directory contains those pictures with enhanced shadow.
 
@@ -59,17 +59,17 @@ set dir=fore
 echo =^> Generate font picture of only foreground.
 %fontmaker% fore -n%name% -d%dir% -cGreen -f%font% -s40 %chars%
 
-set dir=edge
-echo =^> Generate font pictures with 1-pixel edge.
-%fontmaker% edge -n%name% -d%dir% -cRed -eGreen -f%font% -s40 %chars%
+set dir=outline
+echo =^> Generate font pictures with 1-pixel outline.
+%fontmaker% outline -n%name% -d%dir% -cRed -lGreen -f%font% -s40 %chars%
 
 set dir=shadow11
 echo =^> Generate font pictures with 1x1 shadow.
-%fontmaker% shadow11 -n%name% -d%dir% -cRed -eGreen -f%font% -s40 %chars%
+%fontmaker% shadow11 -n%name% -d%dir% -cRed -lGreen -f%font% -s40 %chars%
 
 set dir=shadow21
 echo =^> Generate font pictures with 2x1 shadow.
-%fontmaker% shadow21 -n%name% -d%dir% -cRed -eGreen -f%font% -s40 %chars%
+%fontmaker% shadow21 -n%name% -d%dir% -cRed -lGreen -f%font% -s40 %chars%
 
 pause
 ```
@@ -81,7 +81,7 @@ pause
 ![CH_UPP_D.png](https://bitbucket.org/repo/LBeE8q/images/2647317553-CH_UPP_D.png)
 ![CH_UPP_E.png](https://bitbucket.org/repo/LBeE8q/images/1037804330-CH_UPP_E.png)
 
-### Sample pictures in *edge* directory ###
+### Sample pictures in *outline* directory ###
 ![CH_UPP_A.png](https://bitbucket.org/repo/LBeE8q/images/4181468742-CH_UPP_A.png)
 ![CH_UPP_B.png](https://bitbucket.org/repo/LBeE8q/images/1260088721-CH_UPP_B.png)
 ![CH_UPP_C.png](https://bitbucket.org/repo/LBeE8q/images/1193707189-CH_UPP_C.png)
@@ -106,17 +106,17 @@ pause
 ## Command Line ##
 ### Top level ###
 ```
-usage: fontmaker.exe [-h] [-v] {name,fore,edge,shadow11,shadow21} ...
+usage: fontmaker.exe [-h] [-v] {name,fore,outline,shadow11,shadow21} ...
 
-Generate charater pictures with edge/shadow.
+Generate charater pictures with outline/shadow.
 
 positional arguments:
-  {name,fore,edge,shadow11,shadow21}
+  {name,fore,outline,shadow11,shadow21}
                         commands
     name                Generate a filename-list file according to a char-list
                         file.
     fore                Generate font pictures of only foreground.
-    edge                Generate font pictures with 1-pixel edge.
+    outline             Generate font pictures with 1-pixel outline.
     shadow11            Generate font pictures with shadow of 1 pixel on
                         right, 1 pixel on bottom
     shadow21            Generate font pictures with shadow of 2 pixel on
@@ -169,11 +169,11 @@ optional arguments:
   -H, --fixed           turn on the switch to use fixed height of the font.
 ```
 
-### edge command ###
+### outline command ###
 ```
-usage: fontmaker.exe edge [-h] [-n <file>] [-d <directory>] [-f <file>]
-                          [-s <number>] [-c <color>] [-e <color>] [-b <color>]
-                          char-list-file
+usage: fontmaker.exe outline [-h] [-n <file>] [-d <directory>] [-f <file>]
+                             [-s <number>] [-c <color>] [-l <color>] [-b <color>]
+                             char-list-file
 
 positional arguments:
   char-list-file        The char list file.
@@ -194,8 +194,8 @@ optional arguments:
   -c <color>, --fore <color>
                         assign the <color> of foreground. The default <color>
                         is "white".
-  -e <color>, --edge <color>
-                        assign the <color> of edge/shadow. The default <color>
+  -l <color>, --outline <color>
+                        assign the <color> of outline/shadow. The default <color>
                         is "gray".
   -b <color>, --back <color>
                         assign the <color> of background. The default <color>
@@ -206,7 +206,7 @@ optional arguments:
 ### shadow11 command ###
 ```
 usage: fontmaker.exe shadow11 [-h] [-n <file>] [-d <directory>] [-f <file>]
-                              [-s <number>] [-c <color>] [-e <color>]
+                              [-s <number>] [-c <color>] [-l <color>]
                               [-b <color>]
                               char-list-file
 
@@ -229,9 +229,9 @@ optional arguments:
   -c <color>, --fore <color>
                         assign the <color> of foreground. The default <color>
                         is "white".
-  -e <color>, --edge <color>
-                        assign the <color> of edge/shadow. The default <color>
-                        is "gray".
+  -l <color>, --outline <color>
+                        assign the <color> of outline/shadow. The default
+                        <color> is "gray".
   -b <color>, --back <color>
                         assign the <color> of background. The default <color>
                         is "black".
@@ -241,7 +241,7 @@ optional arguments:
 ### shadow21 command ###
 ```
 usage: fontmaker.exe shadow21 [-h] [-n <file>] [-d <directory>] [-f <file>]
-                              [-s <number>] [-c <color>] [-e <color>]
+                              [-s <number>] [-c <color>] [-l <color>]
                               [-b <color>]
                               char-list-file
 
@@ -264,9 +264,9 @@ optional arguments:
   -c <color>, --fore <color>
                         assign the <color> of foreground. The default <color>
                         is "white".
-  -e <color>, --edge <color>
-                        assign the <color> of edge/shadow. The default <color>
-                        is "gray".
+  -l <color>, --outline <color>
+                        assign the <color> of outline/shadow. The default
+                        <color> is "gray".
   -b <color>, --back <color>
                         assign the <color> of background. The default <color>
                         is "black".

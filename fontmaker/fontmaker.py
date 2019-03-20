@@ -6,9 +6,9 @@ application also provides color assignment features and edging/shadowing effects
 on generated pictures.
 """
 __software__ = "Font Maker"
-__version__ = "0.23"
+__version__ = "0.24"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
-__date__ = "2016/04/19 (initial version); 2019/03/15 (last revision)"
+__date__ = "2016/04/19 (initial version); 2019/03/20 (last revision)"
 
 import os
 import sys
@@ -248,50 +248,50 @@ def _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height=True):
     return im
 
 
-def _apply_color(im, fg_color, eg_color, bg_color):
+def _apply_color(im, fg_color, ol_color, bg_color):
     """Put a palette for an image with given colors.
     """
     # using Image.ADAPTIVE to avoid dithering
     im = im.convert('P', palette=Image.ADAPTIVE, colors=3)
 
     # Index begins from maximal color value down to minimal color value
-    im.putpalette(list(bg_color) + list(eg_color) + list(fg_color))
+    im.putpalette(list(bg_color) + list(ol_color) + list(fg_color))
     return im
 
 
-def gen_edge_pics(chars, filenames, font,
-                  fg_color, eg_color, bg_color, fixed_height):
+def gen_outline_pics(chars, filenames, font,
+                  fg_color, ol_color, bg_color, fixed_height):
     """Genarate a character image with a generated outline.
     """
-    fg_level, eg_level, bg_level = 0, 128, 255
+    fg_level, ol_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
         im = _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height)
-        im = decor.add_edge(im, fg_level, eg_level, bg_level)
-        im = _apply_color(im, fg_color, eg_color, bg_color)
+        im = decor.add_outline(im, fg_level, ol_level, bg_level)
+        im = _apply_color(im, fg_color, ol_color, bg_color)
         im.save(fn, transparency=0)
 
 
 def gen_shadow11_pics(chars, filenames, font,
-                      fg_color, eg_color, bg_color, fixed_height):
+                      fg_color, ol_color, bg_color, fixed_height):
     """Genarate a character image with a generated 1x1 shadow.
     """
-    fg_level, eg_level, bg_level = 0, 128, 255
+    fg_level, ol_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
         im = _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height)
-        im = decor.add_shadow11(im, fg_level, eg_level, bg_level)
-        im = _apply_color(im, fg_color, eg_color, bg_color)
+        im = decor.add_shadow11(im, fg_level, ol_level, bg_level)
+        im = _apply_color(im, fg_color, ol_color, bg_color)
         im.save(fn, transparency=0)
 
 
 def gen_shadow21_pics(chars, filenames, font,
-                      fg_color, eg_color, bg_color, fixed_height):
+                      fg_color, ol_color, bg_color, fixed_height):
     """Genarate a character image with a generated 2x1 shadow.
     """
-    fg_level, eg_level, bg_level = 0, 128, 255
+    fg_level, ol_level, bg_level = 0, 128, 255
     for ch, fn in zip(chars, filenames):
         im = _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height)
-        im = decor.add_shadow21(im, fg_level, eg_level, bg_level)
-        im = _apply_color(im, fg_color, eg_color, bg_color)
+        im = decor.add_shadow21(im, fg_level, ol_level, bg_level)
+        im = _apply_color(im, fg_color, ol_color, bg_color)
         im.save(fn, transparency=0)
 
 #------------------------------------------------------------------------------
@@ -318,23 +318,23 @@ def parse_args(args):
         h, font = select_font(args.font, args.size)
         gen_fore_pics(args.chars, fns, font, args.fore, args.fixed)
 
-    def do_edge(args):
+    def do_outline(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
         h, font = select_font(args.font, args.size)
-        gen_edge_pics(args.chars, fns, font,
-                      args.fore, args.edge, args.back, args.fixed)
+        gen_outline_pics(args.chars, fns, font,
+                      args.fore, args.outline, args.back, args.fixed)
 
     def do_shadow11(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
         h, font = select_font(args.font, args.size)
         gen_shadow11_pics(args.chars, fns, font,
-                          args.fore, args.edge, args.back, args.fixed)
+                          args.fore, args.outline, args.back, args.fixed)
 
     def do_shadow21(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
         h, font = select_font(args.font, args.size)
         gen_shadow21_pics(args.chars, fns, font,
-                          args.fore, args.edge, args.back, args.fixed)
+                          args.fore, args.outline, args.back, args.fixed)
 
     #--------------------------------------------------------------------------
 
@@ -376,13 +376,13 @@ def parse_args(args):
             The default <color> is "%s".
             ''' % fore.get_default('fore'))
 
-    # create the parent parser of edge/shadow color
-    edge = argparse.ArgumentParser(add_help=False)
-    edge.set_defaults(edge='gray')
-    edge.add_argument('-e', '--edge', metavar='<color>', type=rgb,
-        help='''assign the <color> of edge/shadow.
+    # create the parent parser of outline/shadow color
+    outline = argparse.ArgumentParser(add_help=False)
+    outline.set_defaults(outline='gray')
+    outline.add_argument('-l', '--outline', metavar='<color>', type=rgb,
+        help='''assign the <color> of outline/shadow.
             The default <color> is "%s".
-            ''' % edge.get_default('edge'))
+            ''' % outline.get_default('outline'))
 
     # create the parent parser of background color
     back = argparse.ArgumentParser(add_help=False)
@@ -432,22 +432,22 @@ def parse_args(args):
         help='Generate font pictures of only foreground.')
     sub.set_defaults(func=do_fore)
 
-    # create the parser for the "edge" command
-    sub = subparsers.add_parser('edge',
-        parents=[src, name, dir, font, size, fore, edge, back, fixed],
-        help='Generate font pictures with 1-pixel edge.')
-    sub.set_defaults(func=do_edge)
+    # create the parser for the "outline" command
+    sub = subparsers.add_parser('outline',
+        parents=[src, name, dir, font, size, fore, outline, back, fixed],
+        help='Generate font pictures with 1-pixel outline.')
+    sub.set_defaults(func=do_outline)
 
     # create the parser for the "shadow11" command
     sub = subparsers.add_parser('shadow11',
-        parents=[src, name, dir, font, size, fore, edge, back, fixed],
+        parents=[src, name, dir, font, size, fore, outline, back, fixed],
         help='''Generate font pictures with shadow of 1 pixel on right, 1 pixel
             on bottom''')
     sub.set_defaults(func=do_shadow11)
 
     # create the parser for the "shadow21" command
     sub = subparsers.add_parser('shadow21',
-        parents=[src, name, dir, font, size, fore, edge, back, fixed],
+        parents=[src, name, dir, font, size, fore, outline, back, fixed],
         help='''Generate font pictures with shadow of 2 pixel on right, 1 pixel
             on bottom.''')
     sub.set_defaults(func=do_shadow21)
@@ -474,13 +474,13 @@ def test():
     import decor
     h, font = select_font('arial.ttf', 40)
 
-    fg_level, eg_level, bg_level = 0, 128, 255
+    fg_level, ol_level, bg_level = 0, 128, 255
     im = _gen_ch_pic('A', font, fg_level, bg_level)
     im.save('A0.png')
 
-    #im = decor.add_edge(im, fg_level, eg_level, bg_level)
-    #im = decor.add_shadow11(im, fg_level, eg_level, bg_level)
-    im = decor.add_shadow21(im, fg_level, eg_level, bg_level)
+    #im = decor.add_outline(im, fg_level, ol_level, bg_level)
+    #im = decor.add_shadow11(im, fg_level, ol_level, bg_level)
+    im = decor.add_shadow21(im, fg_level, ol_level, bg_level)
 
     im = im.convert('P', palette=Image.ADAPTIVE, colors=3)
     im.save('A1.png')

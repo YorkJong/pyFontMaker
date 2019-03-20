@@ -11,7 +11,7 @@ pause
 %fontmaker% fore -h
 pause
 
-%fontmaker% edge -h
+%fontmaker% outline -h
 pause
 
 %fontmaker% shadow11 -h

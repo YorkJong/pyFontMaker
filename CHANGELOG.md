@@ -1,3 +1,8 @@
+### 0.24 (2019-03-xx)
+
+- Renamed edge command with outline command
+- Renamed -e, --edge option with -l --outline option
+
 ### 0.23 (2019-03-15)
 
 - Improved the rendering of small font on outline, shadow characters.

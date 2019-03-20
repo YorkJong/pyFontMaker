@@ -3,7 +3,7 @@
 This tool decorates OSD .BMP file, e.g., add, shadows
 """
 __software__ = "OSD Decorate"
-__version__ = "1.1"
+__version__ = "1.2"
 __author__ = "Jiang Yu-Kuan <yukuan.jiang@gmail.com>"
 __date__ = "2016/04/19 (initial version); 2016/04/28 (last revision)"
 
@@ -15,8 +15,8 @@ import glob
 from PIL import Image, ImageFilter
 
 
-def _find_edge(im, fg_level, bg_level):
-    """Find and mask out the edge
+def _find_outline(im, fg_level, bg_level):
+    """Find and mask out the outline
     """
     w, h = im.size
     im_out = Image.new('L', (w + 2, h + 2), bg_level)
@@ -27,28 +27,28 @@ def _find_edge(im, fg_level, bg_level):
     return im_out
 
 
-def add_edge(im, fg_level, eg_level, bg_level):
-    """Add edge to an image
+def add_outline(im, fg_level, ol_level, bg_level):
+    """Add outline to an image
     """
-    assert fg_level != eg_level != bg_level
+    assert fg_level != ol_level != bg_level
 
     out = im.copy()
     mask = im.point(lambda x: x != bg_level and 255).convert('L')
     out.paste(im, (0, 0), mask)     # foreground
 
-    mask = _find_edge(im, fg_level, bg_level)
-    edge = mask.point(lambda x: x == 255 and eg_level)
-    out.paste(edge, (0, 0), mask)   # edge
+    mask = _find_outline(im, fg_level, bg_level)
+    outline = mask.point(lambda x: x == 255 and ol_level)
+    out.paste(outline, (0, 0), mask)   # outline
 
     return out
 
 
-def add_shadow11(im, fg_level, eg_level, bg_level):
+def add_shadow11(im, fg_level, ol_level, bg_level):
     """Add shadow of 1 pixel on right, 1 pixel on bottom
     """
-    assert fg_level != eg_level != bg_level
+    assert fg_level != ol_level != bg_level
 
-    shadow = im.point(lambda x: x == fg_level and eg_level)
+    shadow = im.point(lambda x: x == fg_level and ol_level)
     mask = im.point(lambda x: x == fg_level and 255).convert('L')
 
     w, h = im.size
@@ -61,12 +61,12 @@ def add_shadow11(im, fg_level, eg_level, bg_level):
     return out
 
 
-def add_shadow21(im, fg_level, eg_level, bg_level):
+def add_shadow21(im, fg_level, ol_level, bg_level):
     """Add shadow of 2 pixels on right, 1 pixel on bottom
     """
-    assert fg_level != eg_level != bg_level
+    assert fg_level != ol_level != bg_level
 
-    shadow = im.point(lambda x: x == fg_level and eg_level)
+    shadow = im.point(lambda x: x == fg_level and ol_level)
     mask = im.point(lambda x: x == fg_level and 255).convert('L')
 
     w, h = im.size

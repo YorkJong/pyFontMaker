@@ -131,11 +131,11 @@ def select_font(filename, height):
     filename = gen_pil_if_necessary(filename)
     if filename.lower().endswith('.pil'):
         font = ImageFont.load(filename)
-        w, h = font_max_size(font)
+        _w, h = font_max_size(font)
     else:
         for i in xrange(height*3/2, MIN_FONT_SIZE-1, -1):
             font = ImageFont.truetype(filename, i)
-            w, h = font_max_size(font)
+            _w, h = font_max_size(font)
             if h <= height:
                 break
     #print "[INF] Font:{}; size:{}".format(filename, i)
@@ -203,7 +203,7 @@ def gen_fore_pics(chars, filenames, font, color, fixed_height):
     def gen_ch_pic(ch, font, fg_color):
         ch_w, ch_h = font.getsize(ch)
         if fixed_height:
-            w, ch_h = font.getsize('g')     # get the max height of the font
+            _w, ch_h = font.getsize('g')     # get the max height of the font
         size = (ch_w, ch_h)
         canvas = Image.new('RGBA', size)
         draw = ImageDraw.Draw(canvas)
@@ -234,7 +234,7 @@ def _gen_ch_pic(ch, font, fg_level, bg_level, fixed_height=True):
     """
     ch_w, ch_h = font.getsize(ch)
     if fixed_height:
-        w, ch_h = font.getsize('g')     # get the max height of the font
+        _w, ch_h = font.getsize('g')     # get the max height of the font
     size = (ch_w, ch_h)
     im = Image.new('1', size, color=1)
     draw = ImageDraw.Draw(im)
@@ -315,24 +315,24 @@ def parse_args(args):
 
     def do_fore(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
-        h, font = select_font(args.font, args.size)
+        _h, font = select_font(args.font, args.size)
         gen_fore_pics(args.chars, fns, font, args.fore, args.fixed)
 
     def do_outline(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
-        h, font = select_font(args.font, args.size)
+        _h, font = select_font(args.font, args.size)
         gen_outline_pics(args.chars, fns, font,
                       args.fore, args.outline, args.back, args.fixed)
 
     def do_shadow11(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
-        h, font = select_font(args.font, args.size)
+        _h, font = select_font(args.font, args.size)
         gen_shadow11_pics(args.chars, fns, font,
                           args.fore, args.outline, args.back, args.fixed)
 
     def do_shadow21(args):
         fns = ['{}/{}'.format(args.dir, fn) for fn in args.filenames]
-        h, font = select_font(args.font, args.size)
+        _h, font = select_font(args.font, args.size)
         gen_shadow21_pics(args.chars, fns, font,
                           args.fore, args.outline, args.back, args.fixed)
 
@@ -472,7 +472,7 @@ def main():
 
 def test():
     import decor
-    h, font = select_font('arial.ttf', 40)
+    _h, font = select_font('arial.ttf', 40)
 
     fg_level, ol_level, bg_level = 0, 128, 255
     im = _gen_ch_pic('A', font, fg_level, bg_level)
